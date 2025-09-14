@@ -1,40 +1,33 @@
 import streamlit as st
-from tensorflow.keras.models import load_model
+import tensorflow as tf
 import numpy as np
 from PIL import Image
-
-# Load pretrained model
-model = load_model("crop_disease_model.h5")
-
-# Class labels
-class_labels = [
-    "Apple Scab", "Apple Black Rot", "Apple Cedar Rust", "Apple Healthy",
-    "Corn Gray Leaf Spot", "Corn Common Rust", "Corn Northern Leaf Blight", "Corn Healthy",
-    "Potato Early Blight", "Potato Late Blight", "Potato Healthy",
-    "Tomato Bacterial Spot", "Tomato Early Blight", "Tomato Late Blight",
-    "Tomato Leaf Mold", "Tomato Septoria Leaf Spot", "Tomato Spider Mites",
-    "Tomato Target Spot", "Tomato Yellow Leaf Curl Virus", "Tomato Mosaic Virus", "Tomato Healthy"
-]
-
-st.title("🌱 Crop Disease Detector")
-st.write("Upload a leaf image to check if it's healthy or diseased.")
-
-uploaded_file = st.file_uploader("Choose a leaf image...", type=["jpg", "jpeg", "png"])
-
+import gdown
+import os
+MODEL_PATH = "crop_disease_model.h5"
+DRIVE_URL = "https://drive.google.com/uc?id=YOUR_FILE_ID"  
+Drive file ID
+if not os.path.exists(MODEL_PATH):
+    with st.spinner("Downloading model... this may take a minute ⏳"):
+        gdown.download(DRIVE_URL, MODEL_PATH, quiet=False)
+@st.cache_resource
+def load_model():
+    model = tf.keras.models.load_model(MODEL_PATH)
+    return model
+model = load_model()
+st.title("🌱 Crop Disease Detection App")
+st.write("Upload a leaf image, and the model will predict if it's **healthy or diseased**.")
+uploaded_file = st.file_uploader("📂 Upload an image", type=["jpg", "jpeg", "png"])
 if uploaded_file is not None:
-    img = Image.open(uploaded_file).convert('RGB')
-    st.image(img, caption="Uploaded Leaf", use_container_width=True)
-
-    # Resize to model input
-    img = img.resize((256,256))
-    img_array = np.array(img)/255.0
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+    img = image.resize((224, 224))  # match model input
+    img_array = np.array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
-
-    # Predict
     prediction = model.predict(img_array)
-    class_idx = np.argmax(prediction)
+    class_index = np.argmax(prediction)
+    confidence = np.max(prediction)
 
-    if class_idx < len(class_labels):
-        st.success(f"Prediction: {class_labels[class_idx]}")
-    else:
-        st.error("Prediction index out of range. Please check labels.")
+    st.subheader("✅ Prediction Result")
+    st.write(f"**Class:** {class_index}")
+    st.write(f"**Confidence:** {confidence*100:.2f}%")
