@@ -6,7 +6,18 @@ import gdown
 import os
 MODEL_PATH = "crop_disease_model.h5"
 DRIVE_URL = "https://drive.google.com/uc?id=YOUR_FILE_ID"  
-Drive file ID
+import gdown
+from tensorflow.keras.models import load_model
+
+# Google Drive file ID (replace with your model's ID)
+file_id = "YOUR_FILE_ID_HERE"  
+output = "crop_disease_model.h5"
+
+# Download model from Google Drive
+gdown.download(f"https://drive.google.com/uc?id={file_id}", output, quiet=False)
+
+# Load the model
+model = load_model(output)
 if not os.path.exists(MODEL_PATH):
     with st.spinner("Downloading model... this may take a minute ⏳"):
         gdown.download(DRIVE_URL, MODEL_PATH, quiet=False)
