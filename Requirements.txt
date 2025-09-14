@@ -1,6 +1,8 @@
+opencv-python
+matplotlib
 streamlit
 tensorflow
+keras
 numpy
 pillow
-h5py
 gdown
