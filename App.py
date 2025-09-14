@@ -10,7 +10,7 @@ import gdown
 from tensorflow.keras.models import load_model
 
 # Google Drive file ID (replace with your model's ID)
-file_id = "YOUR_FILE_ID_HERE"  
+file_id = "1AbCdEfGhIjKlMnOp"
 output = "crop_disease_model.h5"
 
 # Download model from Google Drive
