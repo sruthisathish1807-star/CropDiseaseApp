@@ -1,5 +1,6 @@
-streamlit==1.24.0
-tensorflow-cpu==2.13.0
-keras==2.13.1
-pillow
+streamlit
+tensorflow
 numpy
+pillow
+h5py
+gdown
